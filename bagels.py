@@ -11,9 +11,9 @@ class UserGuess:
         assert userGuessString.isdecimal(), "IsNotDecimal"
         assert len(userGuessString) == 3, "IsNotLengthThree"
 
-        self.firstDigit = userGuessString[0]
-        self.secondDigit = userGuessString[1]
-        self.thirdDigit = userGuessString[2]
+        self.firstDigit = int(userGuessString[0])
+        self.secondDigit = int(userGuessString[1])
+        self.thirdDigit = int(userGuessString[2])
 
 class SecretNumber:
 
@@ -30,6 +30,36 @@ class SecretNumber:
     # Compute clues to display and add to list.
     def getClues(self, userGuess:UserGuess):
         clues = []
+
+        # check for clue in first digit.
+        isFirstDigitClued = False
+        if userGuess.firstDigit == self.__firstDigit:
+            clues.append("Fermi")
+            isFirstDigitClued = True # so that program does not compute clues for this digit anymore
+        elif userGuess.firstDigit == self.__secondDigit or self.__thirdDigit:
+            clues.append("Pico")
+            isFirstDigitClued = True
+        
+        # check for clue in second digit.
+        isSecondDigitClued = False
+        if userGuess.secondDigit == self.__secondDigit:
+            clues.append("Fermi")
+            isSecondDigitClued = True
+        elif (userGuess.secondDigit == self.__firstDigit and isFirstDigitClued)  or self.__thirdDigit:
+            clues.append("Pico")
+            isSecondDigitClued = True
+
+        # check for clue in third digit.
+        if userGuess.thirdDigit == self.__thirdDigit:
+            clues.append("Fermi")
+        elif (userGuess.thirdDigit == (self.__firstDigit and isFirstDigitClued))  or (userGuess.secondDigit == (self.__secondDigit and isSecondDigitClued)):
+            clues.append("Pico")
+
+        # put Bagels clue if there is no clue in list.
+        if len(clues) == 0:
+            clues.append("Bagels")
+        
+
 
 def main():
     # Display starting game information.
@@ -62,6 +92,7 @@ def main():
         clues = currentSecretNumber.getClues(currentUserGuess)
 
         # Display clues.
+        print(clues)
 
         # Break loop if game is over.
         if guessCount > 10:
