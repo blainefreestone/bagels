@@ -1,7 +1,7 @@
 #! python3
 # bagels.py
 
-import random
+import random, pyinputplus
 
 class UserGuess:
     
@@ -32,27 +32,25 @@ class SecretNumber:
         clues = []
 
         # check for clue in first digit.
-        isFirstDigitClued = False
         if userGuess.firstDigit == self.__firstDigit:
             clues.append("Fermi")
             isFirstDigitClued = True # so that program does not compute clues for this digit anymore
-        elif userGuess.firstDigit == self.__secondDigit or self.__thirdDigit:
+        elif userGuess.firstDigit in (self.__secondDigit, self.__thirdDigit):
             clues.append("Pico")
             isFirstDigitClued = True
         
         # check for clue in second digit.
-        isSecondDigitClued = False
         if userGuess.secondDigit == self.__secondDigit:
             clues.append("Fermi")
             isSecondDigitClued = True
-        elif (userGuess.secondDigit == self.__firstDigit and isFirstDigitClued)  or self.__thirdDigit:
+        elif userGuess.secondDigit in (self.__firstDigit, self.__thirdDigit):
             clues.append("Pico")
             isSecondDigitClued = True
 
         # check for clue in third digit.
         if userGuess.thirdDigit == self.__thirdDigit:
             clues.append("Fermi")
-        elif (userGuess.thirdDigit == (self.__firstDigit and isFirstDigitClued))  or (userGuess.secondDigit == (self.__secondDigit and isSecondDigitClued)):
+        elif userGuess.thirdDigit in (self.__firstDigit, self.__secondDigit):
             clues.append("Pico")
 
         # put Bagels clue if there is no clue in list.
@@ -93,11 +91,31 @@ def main():
         # Compute clues.
         clues = currentSecretNumber.getClues(currentUserGuess)
 
+        # Check for game was won.
+        if clues.count("Fermi") == 3:
+            print("You got it!")
+            playAgain = pyinputplus.inputYesNo(prompt="Do you want to play again? (yes or no)\n> ", limit=3)
+            if playAgain == "yes":
+                guessCount = 0
+                print("")
+                continue
+            break
+        
         # Display clues.
-        print(clues)
+        clueDisplayString = ""
+        for clue in clues:
+            clueDisplayString += f"{clue} "
+        print(clueDisplayString)
 
         # Break loop if game is over.
         if guessCount > 10:
+            print("You didn't get it!")
+            playAgain = pyinputplus.inputYesNo(prompt="Do you want to try again? (yes or no)\n> ", limit=3)
+            
+            if playAgain == "yes":
+                guessCount = 0
+                print("")
+                continue
             break
 
 main()
