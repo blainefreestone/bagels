@@ -58,6 +58,8 @@ class SecretNumber:
         # put Bagels clue if there is no clue in list.
         if len(clues) == 0:
             clues.append("Bagels")
+
+        return clues
         
 
 
